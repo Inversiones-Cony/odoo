@@ -5,8 +5,8 @@
         model="product.template"
         string="Print Barcodes"
         report_type="qweb-pdf"
-        name="cony-barcodes.report_product_barcode_template"
-        file="cony-barcodes.report_product_barcode_template"
+        name="cony_barcodes.report_product_barcode_template"
+        file="cony_barcodes.report_product_barcode_template"
     />
 
     <template id="report_product_barcode_template">
