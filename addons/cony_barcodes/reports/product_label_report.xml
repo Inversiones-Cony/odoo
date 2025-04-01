@@ -7,7 +7,7 @@
       0 1px 3px rgba(0,0,0,0.1); overflow: hidden; page-break-inside: avoid; background-color:
       white;"> -->
     <div class="product-label"
-      style="width: 6cm; height: 3.6cm; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden; page-break-inside: avoid; background-color: white;">
+      style="width: 9.8cm; height: 6cm; border: 1px solid #ddd; border-radius: 4px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden; page-break-inside: avoid; background-color: white;">
       <!-- Product name (25% of height) -->
       <div style="height: 25%; margin-bottom: 2%;">
         <h3
@@ -93,12 +93,24 @@
     <t t-call="web.html_container">
       <t t-call="web.basic_layout">
         <div class="page" style="padding: 0; margin: 0;">
-          <div style="display: flex; flex-wrap: wrap; padding: 0.3cm;">
+          <!-- <div style="display: flex; flex-wrap: wrap; padding: 0.3cm;"> -->
+          <!--   <t t-foreach="docs" t-as="o"> -->
+          <!-- Each product label in a 50% width container for 2-column grid -->
+          <!-- <div style="padding: 0.2cm; box-sizing: border-box;"> -->
+          <!--       <t t-call="cony_barcodes.product_report_card" /> -->
+          <!--     </div> -->
+          <!--   </t> -->
+          <!-- </div> -->
+          <div style="display: table; width: 100%; padding: 0.3cm;">
             <t t-foreach="docs" t-as="o">
-              <!-- Each product label in a 50% width container for 2-column grid -->
-              <div style="padding: 0.2cm; box-sizing: border-box;">
+              <!-- Use display: table-cell instead of flex -->
+              <div style="display: table-cell; width: 50%; padding: 0.2cm; box-sizing: border-box;">
                 <t t-call="cony_barcodes.product_report_card" />
               </div>
+              <!-- Force a new row after every 2 items -->
+              <t t-if="(o_index+1) % 2 == 0">
+                <div style="display: table-row"></div>
+              </t>
             </t>
           </div>
         </div>
