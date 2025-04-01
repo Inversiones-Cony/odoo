@@ -25,6 +25,7 @@
     # always loaded
     'data': [
         'reports/product_label_report.xml',
+        'views/product_barcode_gen.xml',
     ],
     # only loaded in demonstration mode
 }
