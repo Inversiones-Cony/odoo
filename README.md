@@ -1,3 +1,29 @@
+# Cony Dev
+
+This section will be exclusive to the internal changes we do to odoo.
+
+## Development
+
+## Building
+
+You may use `Dockefile.dev` to build your own local development container with:
+
+```sh
+docker buildx build -f Dockerfile.dev --tag odoo-dev .
+```
+
+## Running
+
+To ensure that the repo is mounted onto this place you can run:
+
+```sh
+docker run --rm -it -v "$(pwd)":/home/odoo/repo -e PGHOST=db -e PGUSER=<Ask Admin> -e
+  PGPASSWORD=<Ask Admin> -p 8069:8069 --network odoo_network odoo-dev bash -lc 'odoo-bin -c /workspace/odoo/odoo.conf'
+```
+
+
+# Proper Old Odoo
+
 [![Build Status](https://runbot.odoo.com/runbot/badge/flat/1/master.svg)](https://runbot.odoo.com/runbot)
 [![Tech Doc](https://img.shields.io/badge/master-docs-875A7B.svg?style=flat&colorA=8F8F8F)](https://www.odoo.com/documentation/16.0)
 [![Help](https://img.shields.io/badge/master-help-875A7B.svg?style=flat&colorA=8F8F8F)](https://www.odoo.com/forum/help-1)
