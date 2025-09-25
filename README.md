@@ -17,10 +17,14 @@ docker buildx build -f Dockerfile.dev --tag odoo-dev .
 To ensure that the repo is mounted onto this place you can run:
 
 ```sh
-docker run --rm -it -v "$(pwd)":/home/odoo/repo -e PGHOST=db -e PGUSER=<Ask Admin> -e
+docker run --rm -it -v "$(pwd)":/workspace -v "<mount for /mnt/extra-addons>:target_path"  -v "<mount for /var/lib/odoo>:target_path" -e PGHOST=db -e PGUSER=<Ask Admin> -e
   PGPASSWORD=<Ask Admin> -p 8069:8069 --network odoo_network odoo-dev bash -lc 'odoo-bin -c /workspace/odoo/odoo.conf'
 ```
 
+In my instance:
+```sh
+docker run --rm -it -v "$(pwd)":/workspace -v "/mnt/odooaddons/addons/:/mnt/extra-addons"  -v "/mnt/odooaddons/filestore/:/var/lib/odoo" -p 8069:8069 --network odoo_odoo_network odoo-dev 
+```
 
 # Proper Old Odoo
 

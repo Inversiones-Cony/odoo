@@ -99,6 +99,7 @@ RUN mkdir /etc/odoo \
     && chown -R odoo /workspace
 
 COPY ./odoo.conf /etc/odoo/
+COPY ./requirements.txt /workspace
 
 # Set permissions and Mount /var/lib/odoo to allow restoring filestore and /mnt/extra-addons for users addons
 RUN chown odoo /etc/odoo/odoo.conf
@@ -123,8 +124,8 @@ RUN ./bin/micromamba shell init -s bash -r /opt/micromamba \
     && ./bin/micromamba create -y -p /opt/micromamba/envs/odoo-16-fork python=3.11 \
     && echo 'export MAMBA_ROOT_PREFIX=/opt/micromamba' >> /home/odoo/.bashrc \
     && echo 'export PATH=$PATH:/opt/micromamba/bin' >> /home/odoo/.bashrc \
-    && echo 'micromamba activate odoo-16-fork' >> /home/odoo/.bashrc
-    # && ./bin/micromamba install -y -p /opt/micromamba/envs/odoo-16-fork -f /workspace/requirements.txt \
+    && echo 'micromamba activate odoo-16-fork' >> /home/odoo/.bashrc \
+    && ./bin/micromamba install -y -p /opt/micromamba/envs/odoo-16-fork -f /workspace/requirements.txt
 
 
 ENTRYPOINT ["/bin/bash"]
