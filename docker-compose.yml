@@ -13,6 +13,30 @@ services:
       - /mnt/database:/var/lib/postgresql/data
     restart: unless-stopped
 
+  odoo:
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - .:/workspace
+      - /mnt/odooaddons/filestore/:/var/lib/odoo
+      - /home/ottersome/projects/cony/odoo/odoo_addons:/mnt/extra-addons
+    networks:
+      - odoo_network
+    ports:
+      - 8069:8069
+    depends_on:
+      - db
+    environment:
+      TZ: America/Tegucigalpa
+    entrypoint: ["/workspace/odoo-bin"]
+    command: <
+      [ 
+      "-u", "cony_base_utils"
+      "-u", "pos_receipt_hn_tm30ii"
+      "-u", "whatsapp_business_cloud"
+      ]
+
 networks:
   odoo_network:
     driver: bridge
