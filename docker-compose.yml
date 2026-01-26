@@ -1,12 +1,12 @@
-version: "3.8"
+# This is a development docker-compose. It will mostly make reference to development DOckerfiles where relevant.
 
 services:
   db:
     image: postgres:13
     environment:
       POSTGRES_DB: postgres
-      POSTGRES_USER: odoo
-      POSTGRES_PASSWORD: odoo
+      POSTGRES_USER: ${ODOO_USERNAME}
+      POSTGRES_PASSWORD: ${ODOO_PASSWORD}
     networks:
       - odoo_network
     volumes:
@@ -32,10 +32,78 @@ services:
     entrypoint: ["/workspace/odoo-bin"]
     command: <
       [ 
-      "-u", "cony_base_utils"
-      "-u", "pos_receipt_hn_tm30ii"
-      "-u", "whatsapp_business_cloud"
+      "-u", "cony_base_utils",
+      "-u", "pos_receipt_hn_tm30ii",
+      "-u", "whatsapp_business_cloud",
+      "-u", "s3_base_utils",
+      "-u", "hr_recruitment_cony",
+      "-u", "sar_excel_reports",
+      "-u", "pos_loyalty_qr_scanner",
       ]
+
+  sidecart:
+    build:
+      context: ../odoo-website-sidecart
+      dockerfile: Dockerfile
+    ports:
+      - "8420:8000"
+    environment:
+      # Odoo connection (adjust to match your Odoo setup)
+      - ODOO_URL=${ODOO_URL}
+      - ODOO_DB=${ODOO_DB}
+      - ODOO_USERNAME=${ODOO_USERNAME}
+      - ODOO_PASSWORD=${ODOO_PASSWORD}
+
+      # Redis connection
+      - REDIS_URL=${REDIS_URL}
+      #- REDIS_PASSWORD=${REDIS_PASSWORD}
+
+      # Authentication
+      - API_KEY=${API_KEY}
+      - HMAC_SECRET_KEY=${HMAC_SECRET_KEY}
+
+      # Service configuration
+      # - LOG_LEVEL=${LOG_LEVEL}
+      # - CACHE_DEFAULT_TTL=${CACHE_DEFAULT_TTL}
+      # - ENVIRONMENT=${ENVIRONMENT}
+
+      # Rate limiting
+      # - RATE_LIMIT_ENABLED=${RATE_LIMIT_ENABLED}
+      # - RATE_LIMIT_PER_MINUTE=${RATE_LIMIT_PER_MINUTE}
+
+      # CORS
+      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-http://localhost:3000}
+    depends_on:
+      redis:
+        condition: service_healthy
+    networks:
+      - odoo_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/api/v1/health')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 10s
+
+  # Redis for caching
+  redis:
+    image: redis:7-alpine
+    container_name: sidecart-redis
+    command: redis-server --appendonly yes
+    volumes:
+      - redis_data:/data
+    networks:
+      - odoo_network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  redis_data:
 
 networks:
   odoo_network:
