@@ -30,16 +30,24 @@ services:
     environment:
       TZ: America/Tegucigalpa
     entrypoint: ["/workspace/odoo-bin"]
-    command: <
-      [ 
-      "-u", "cony_base_utils",
-      "-u", "pos_receipt_hn_tm30ii",
-      "-u", "whatsapp_business_cloud",
-      "-u", "s3_base_utils",
-      "-u", "hr_recruitment_cony",
-      "-u", "sar_excel_reports",
-      "-u", "pos_loyalty_qr_scanner",
-      ]
+    command: 
+      - "--load=web,queue_job"
+      - "--workers=2"
+      - "-u"
+      - "cony_base_utils"
+      - "-u"
+      - "pos_receipt_hn_tm30ii"
+      - "-u"
+      - "whatsapp_business_cloud"
+      - "-u"
+      - "s3_base_utils"
+      - "-u"
+      - "hr_recruitment_cony"
+      - "-u"
+      - "sar_excel_reports"
+      - "-u"
+      - "pos_loyalty_qr_scanner"
+
 
   sidecart:
     build:
@@ -53,6 +61,7 @@ services:
       - ODOO_DB=${ODOO_DB}
       - ODOO_USERNAME=${ODOO_USERNAME}
       - ODOO_PASSWORD=${ODOO_PASSWORD}
+      - ODOO_API_KEY=${ODOO_API_KEY}
 
       # Redis connection
       - REDIS_URL=${REDIS_URL}
