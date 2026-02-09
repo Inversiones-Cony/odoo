@@ -25,6 +25,7 @@ services:
       - odoo_network
     ports:
       - 8069:8069
+      - 8072:8072
     depends_on:
       - db
     environment:
@@ -32,7 +33,8 @@ services:
     entrypoint: ["/workspace/odoo-bin"]
     command: 
       - "--load=web,queue_job"
-      - "--workers=2"
+      - "--workers=4"
+      - "--longpolling-port=8072"
       - "-u"
       - "cony_base_utils"
       - "-u"
