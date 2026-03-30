@@ -34,9 +34,9 @@ services:
       TZ: America/Tegucigalpa
     entrypoint: ["/workspace/odoo-bin"]
     command: 
-      - "--load=web,queue_job"
-      - "--workers=4"
-      - "--longpolling-port=8072"
+      # - "--load=web,queue_job"
+      # - "--workers=4"
+      # - "--gevent-port=8072"
       - "-u"
       - "cony_base_utils"
       - "-u"
@@ -105,6 +105,18 @@ services:
       retries: 3
       start_period: 10s
 
+  prometheus:
+    image: prom/prometheus:latest
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./monitoring/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+    depends_on:
+      - sidecart
+    networks:
+      - odoo_network
+    restart: unless-stopped
+
   # Redis for caching
   redis:
     image: redis:7-alpine
@@ -127,4 +139,3 @@ volumes:
 networks:
   odoo_network:
     driver: bridge
-
