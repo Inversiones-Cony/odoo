@@ -5,14 +5,15 @@ services:
     image: postgres:13
     environment:
       POSTGRES_DB: postgres
-      POSTGRES_USER: ${ODOO_USERNAME}
-      POSTGRES_PASSWORD: ${ODOO_PASSWORD}
+      POSTGRES_USER: ${POSTGRES_DB_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_ADMIN_PASSWORD}
     ports:
       - "5430:5432"
     networks:
       - odoo_network
     volumes:
-      - /mnt/database:/var/lib/postgresql/data
+      - ${HOME}/data/cony/odoo/mounts/database:/var/lib/postgresql/data:Z
+      - ${HOME}/data/cony/odoo/database_dumps/:/opt/postgres_dumps/
     restart: unless-stopped
 
   odoo:
@@ -20,9 +21,9 @@ services:
       context: .
       dockerfile: Dockerfile.dev
     volumes:
-      - .:/workspace
-      - /mnt/odooaddons/filestore/:/var/lib/odoo
-      - /home/ottersome/projects/cony/odoo/odoo_addons:/mnt/extra-addons
+      - .:/workspace:Z
+      - ${HOME}/data/cony/odoo/mounts/filestore/:/var/lib/odoo
+      - ${HOME}/projects/cony/odoo/odoo_addons:/mnt/extra-addons
     networks:
       - odoo_network
     ports:
@@ -32,32 +33,72 @@ services:
       - db
     environment:
       TZ: America/Tegucigalpa
-    entrypoint: ["/workspace/odoo-bin"]
-    command: 
+      PYTHONPATH: "."
+      PGPASSWORD: ${ODOO_USER_DB_PASSWORD}
+    #entrypoint: ["/workspace/odoo-bin"] # We now used neutralize_database.py to ensure the database is neutralized before we launch it
+    # entrypoint: ["sleep", "/workspace/scripts/odoo-neutralize_database.py"] 
+    entrypoint: ["python", "/workspace/scripts/odoo-neutralize_database.py"] 
+    # command: 
+    #   - "--db_password"
+      # - "${ODOO_USER_DB_PASSWORD}"
       # - "--load=web,queue_job"
       # - "--workers=4"
-      # - "--gevent-port=8072"
-      - "-u"
-      - "cony_base_utils"
-      - "-u"
-      - "pos_receipt_hn_tm30ii"
-      - "-u"
-      - "whatsapp_business_cloud"
-      - "-u"
-      - "s3_base_utils"
-      - "-u"
-      - "hr_recruitment_cony"
-      - "-u"
-      - "sar_excel_reports"
-      - "-u"
-      - "pos_loyalty_qr_scanner"
-      - "-u"
-      - "production_dashboard"
-      # - "--test-enable"
-      - "-u"
-      - "hr_recruitment_cony"
-      # - "--test-enable"
-      # - "--stop-after-init"
+      # - - "--gevent-port=8072"
+      # - "-u"
+      # - "cony_base_utils"
+      # - "-u"
+      # - "pos_receipt_hn_tm30ii"
+      # - "-u"
+      # - "whatsapp_business_cloud"
+      # - "-u"
+      # - "s3_base_utils"
+      # - "-u"
+      # - "hr_recruitment_cony"
+      # - "-u"
+      # - "sar_excel_reports"
+      # - "-u"
+      # - "pos_loyalty_qr_scanner"
+      # - "-u"
+      # - "production_dashboard"
+      # # - "--test-enable"
+      # - "-u"
+      # - "cony_webhook_auth"
+      # - "-u"
+      # - "hr_recruitment_cony"
+      # - "-u"
+      # - "sidecart_webhook_base"
+      # # - "--test-enable"
+      # # - "--stop-after-init"
+     
+  odoo-test:
+    profiles:
+      - test #  only to be run on test
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    volumes:
+      - .:/workspace
+      - /mnt/odooaddons/filestore/:/var/lib/odoo
+      - /home/ottersome/projects/cony/odoo/odoo_addons:/mnt/extra-addons
+    networks:
+      - odoo_network
+    depends_on:
+      - db
+    environment:
+      TZ: America/Tegucigalpa
+      PYTHONUNBUFFERED: 1
+    entrypoint: ["/workspace/odoo-bin"]
+    command:
+      - "-i"
+      - "sidecart_webhook_base"
+      - "--test-enable"
+      - "--test-tags"
+      # - "/sidecart_webhook_base:TestSidecartRequestIdentityLock,/sidecart_webhook_base:TestSidecartClientesValidation,sidecart_basic"
+      # - "/sidecart_webhook_base:TestSidecartOrders"
+      - "/sidecart_webhook_base:TestSidecartApiKeyAuth"
+      - "--stop-after-init"
+      - "--log-level=test"
+      - "--log-handler=odoo.tests:DEBUG"
 
   sidecart:
     build:
