@@ -49,3 +49,4 @@ package.json
 /share/
 /src/
 odoo-venv
+/odoo.conf
