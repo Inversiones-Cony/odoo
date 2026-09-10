@@ -14,16 +14,16 @@ services:
       - odoo_network
     volumes:
       - ${HOME}/data/cony/odoo/mounts/database:/var/lib/postgresql/data:Z
-      - ${HOME}/data/cony/odoo/database_dumps/:/opt/postgres_dumps/
+      - ${HOME}/data/cony/odoo/database_dumps/:/opt/postgres_dumps/:Z
     restart: unless-stopped
 
   odoo:
     image: odoo:odoo:final-dev-16 # 最後一次用這個映像。現在已EOL
     volumes:
       - .:/workspace:Z
-      - ${HOME}/data/cony/odoo/mounts/filestore/:/var/lib/odoo
-      - ${HOME}/projects/cony/odoo/odoo_addons:/mnt/extra-addons
-      - ./odoo.conf /etc/odoo.conf 
+      - ${HOME}/data/cony/odoo/mounts/filestore/:/var/lib/odoo:Z
+      - ${HOME}/projects/cony/odoo/odoo_addons:/mnt/extra-addons:Z
+      - ${CWD}/odoo.conf:/etc/odoo.conf:Z
     networks:
       - odoo_network
     ports:
