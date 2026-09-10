@@ -1,4 +1,5 @@
-# This is a **DEVELOPMENT** docker-compose. It will mostly make reference to development DOckerfiles where relevant.
+# This is a **DEVELOPMENT** docker-compose. It will mostly make reference to development Dockerfiles where relevant.
+# IT is a very unsafe environment for this to end up in production. Good for dev.
 
 services:
   db:
@@ -17,13 +18,12 @@ services:
     restart: unless-stopped
 
   odoo:
-    build:
-      context: .
-      dockerfile: Dockerfile.dev
+    image: odoo:odoo:final-dev-16 # 最後一次用這個映像。現在已EOL
     volumes:
       - .:/workspace:Z
       - ${HOME}/data/cony/odoo/mounts/filestore/:/var/lib/odoo
       - ${HOME}/projects/cony/odoo/odoo_addons:/mnt/extra-addons
+      - ./odoo.conf /etc/odoo.conf 
     networks:
       - odoo_network
     ports:
@@ -34,10 +34,9 @@ services:
     environment:
       TZ: America/Tegucigalpa
       PYTHONPATH: "."
-      PGPASSWORD: ${ODOO_USER_DB_PASSWORD}
     #entrypoint: ["/workspace/odoo-bin"] # We now used neutralize_database.py to ensure the database is neutralized before we launch it
-    # entrypoint: ["sleep", "/workspace/scripts/odoo-neutralize_database.py"] 
-    entrypoint: ["python", "/workspace/scripts/odoo-neutralize_database.py"] 
+    entrypoint: ["sleep", "infinity"] 
+    #entrypoint: ["python", "/workspace/scripts/odoo-neutralize_database.py"] 
     # command: 
     #   - "--db_password"
       # - "${ODOO_USER_DB_PASSWORD}"
