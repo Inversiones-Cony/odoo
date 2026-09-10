@@ -34,8 +34,14 @@ services:
     environment:
       TZ: America/Tegucigalpa
       PYTHONPATH: "."
-    #entrypoint: ["/workspace/odoo-bin"] # We now used neutralize_database.py to ensure the database is neutralized before we launch it
-    entrypoint: ["sleep", "infinity"] 
+    entrypoint: [
+      "/workspace/odoo-bin",
+      "-c",
+      "/workspace/odoo.conf"
+    ] # We now used neutralize_database.py to ensure the database is neutralized before we launch it
+     
+    # entrypoint: ["sleep", "infinity"] 
+     
     #entrypoint: ["python", "/workspace/scripts/odoo-neutralize_database.py"] 
     # command: 
     #   - "--db_password"
