@@ -58,11 +58,7 @@ END
 SQL
 
 docker-compose exec --user "$POSTGRES_DB_USER" "$DB_SERVICE_NAME" \
-  createdb -U "$POSTGRES_DB_USER" "$DB_NAME"
-
-# Create privileged extensions AS POSTGRES
-docker-compose exec -T db psql -U $POSTGRES_DB_USER -d "$DB_NAME" \
-  -c 'CREATE EXTENSION IF NOT EXISTS pg_trgm;'
+  createdb -U "$POSTGRES_DB_USER" -O "$ODOO_DB_USER" "$DB_NAME"
 
 echo "Restoring from ${DUMP_PATH}"
 docker-compose exec -T "$DB_SERVICE_NAME" \
